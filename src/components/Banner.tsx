@@ -4,6 +4,14 @@ import React from 'react';
 
 
 const Banner = () => {
+   fetch('/api/auth/user', {
+      method: 'GET',
+      headers: {
+         'Content-Type': 'application/json',
+      },
+   })
+      .then((response) => response.json())
+   .then((data) => console.log(data))
    return (
       <div className='relative'>
          {/* Banner Image */}
