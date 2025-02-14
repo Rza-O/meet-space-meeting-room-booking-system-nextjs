@@ -1,9 +1,25 @@
 "use client";
-import { SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import { User } from '@/lib/types';
+import { SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import Link from 'next/link';
 import React from 'react';
 
 const Navbar = () => {
+   // checking if user is signed in
+   const { isSignedIn } = useUser();
+
+   // using tanstack/react-query to fetch data
+   useQuery<User>({
+      queryKey: ['user'],
+      queryFn: async (): Promise<User> => {
+         const { data } = await axios.post<User>('/api/auth/user');
+         return data;
+      },
+      enabled: isSignedIn,
+   })
+
    const navMenu: React.JSX.Element =
       <>
          <li><Link href={'/'}>Home</Link></li>
