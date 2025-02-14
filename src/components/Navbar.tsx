@@ -1,5 +1,4 @@
 "use client";
-import { User } from '@/lib/types';
 import { SignedOut, SignInButton, UserButton, useUser } from '@clerk/nextjs';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -10,22 +9,42 @@ const Navbar = () => {
    // checking if user is signed in
    const { isSignedIn } = useUser();
 
-   // using tanstack/react-query to fetch data
-   useQuery<User>({
-      queryKey: ['user'],
-      queryFn: async (): Promise<User> => {
-         const { data } = await axios.post<User>('/api/auth/user');
+   // checking user role to optional chain navLinks based on user role
+   const { data } = useQuery<{ role: string }>({
+      queryKey: ['user-role'],
+      queryFn: async () => {
+         const { data } = await axios.get('/api/auth/user');
          return data;
       },
-      enabled: isSignedIn,
+      enabled: isSignedIn
    })
 
-   const navMenu: React.JSX.Element =
+   const role = data?.role;
+   console.log("from navbar-> ", role);
+
+   const guestNav: React.JSX.Element = (
       <>
-         <li><Link href={'/'}>Home</Link></li>
-         <li><Link href={'/'}>Available Rooms</Link></li>
-         <li><Link href={'/my-bookings'}>My Bookings</Link></li>
+         {/* <li><Link href="/">Home</Link></li> */}
       </>
+   );
+
+   const userNav: React.JSX.Element = (
+      <>
+         <li><Link href="/">Home</Link></li>
+         <li><Link href="/rooms">Available Rooms</Link></li>
+         <li><Link href="/my-bookings">My Bookings</Link></li>
+      </>
+   );
+   const adminNav: React.JSX.Element = (
+      <>
+         <li><Link href="/">Home</Link></li>
+         <li><Link href="/add-room">Add room</Link></li>
+         <li><Link href="/admin">Manage Room</Link></li>
+         <li><Link href="/admin">Manage Bookings</Link></li>
+
+      </>
+   );
+
    return (
       <div>
          <div className="navbar bg-base-100 text-white w-11/12 mx-auto">
@@ -48,14 +67,14 @@ const Navbar = () => {
                   <ul
                      tabIndex={0}
                      className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                     {navMenu}
+                     {!isSignedIn ? guestNav : role === 'admin' ? adminNav : userNav}
                   </ul>
                </div>
-               <a className="font-bold text-xl">MeetSpace</a>
+               <Link href='/' className="font-bold text-xl">MeetSpace</Link>
             </div>
             <div className="navbar-center hidden lg:flex">
                <ul className="menu menu-horizontal px-1">
-                  {navMenu}
+                  {!isSignedIn ? guestNav : role === 'admin' ? adminNav : userNav}
                </ul>
             </div>
             <div className="navbar-end">

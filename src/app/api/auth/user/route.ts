@@ -29,10 +29,7 @@ export const POST = async () => {
 		return NextResponse.json(existingUser);
 	} catch (error) {
 		console.log("Error checking user:", error);
-		return NextResponse.json(
-			{ message: "Error checking user" },
-			{ status: 500 }
-		);
+		return NextResponse.json({ message: "Error checking user" },{ status: 500 });
 	}
 };
 
@@ -44,7 +41,7 @@ export const GET = async () => {
 
 		// If no user return a 401 Unauthorized response
       if (!user) {
-			return NextResponse.json({message: "Unauthorized"}, {status: 401});
+			return NextResponse.json({message: "Please Sign in!"});
 		}
 
 		// If no user email return a 401 Unauthorized response
