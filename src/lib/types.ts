@@ -5,9 +5,21 @@ export interface User {
 }
 
 export type Room = {
-		id: string
-		name: string
-		imageUrl: string
-		capacity: number
-		amenities: string[]
-	}
+	id: string;
+	name: string;
+	imageUrl: string;
+	capacity: number;
+	amenities: string[];
+};
+
+export type Booking = {
+	id: string;
+	roomId: string;
+	userId: string;
+	title: string;
+	description?: string;
+	startTime: string;
+	endTime: string;
+	createdAt: Date;
+	updatedAt: Date;
+};

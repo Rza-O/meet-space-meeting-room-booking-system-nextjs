@@ -1,6 +1,7 @@
 import { Room } from '@/lib/types';
 import Image from 'next/image';
 import React from 'react';
+import BookNowButton from './ui/BookNowButton';
 
 type RoomCardProps = {
    room: Room
@@ -27,7 +28,7 @@ const RoomCard = ({ room }: RoomCardProps) => {
                }
             </div>
             <div className="card-actions">
-               <button className="btn btn-primary">Book Now</button>
+               <BookNowButton room={room} />
             </div>
          </div>
       </div>
