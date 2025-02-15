@@ -14,3 +14,8 @@ export const POST = async (req: NextRequest) => {
       
    }
 };
+
+export const GET = async () => {
+   const rooms = await prisma.room.findMany();
+   return NextResponse.json(rooms);
+};
