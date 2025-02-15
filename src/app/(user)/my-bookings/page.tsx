@@ -41,7 +41,7 @@ const MyBookings = () => {
    });
 
    // Fixed pagination logic
-   const bookings = bookingsResponse?.data || [];
+   const bookings = bookingsResponse?.bookings || [];
    const totalPages = Math.ceil(bookings.length / bookingsPerPage);
    const paginatedBookings = bookings.slice(
       (currentPage - 1) * bookingsPerPage,
