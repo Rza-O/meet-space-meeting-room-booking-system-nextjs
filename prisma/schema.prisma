@@ -4,7 +4,6 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,4 +18,31 @@ model User {
   clerkId String @unique
   email   String @unique
   role    String @default("user")
+}
+
+model Room {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  capacity  Int
+  amenities String[]
+  imageUrl  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  bookings  Booking[]
+}
+
+model Booking {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId      String   @db.ObjectId
+  userId      String 
+  room        Room     @relation(fields: [roomId], references: [id])
+  title       String
+  description String? 
+  startTime   DateTime
+  endTime     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([roomId]) 
+  @@index([userId]) 
 }
