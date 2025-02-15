@@ -1,10 +1,11 @@
-"use client";
+"use client"
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import Image from 'next/image';
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState } from 'react';
+import {  useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import Select from "react-select";
 import { z } from 'zod';
 
@@ -26,14 +27,20 @@ const amenitiesOptions = [
 ]
 
 const AddRoomForm = () => {
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
    const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
    const [previewImage, setPreviewImage] = useState<string | null>(null);
    const [isUploading, setIsUploading] = useState<boolean>(false);
+   const [isClient, setIsClient] = useState<boolean>(false);
+   const [isFormSubmitting, setIsFormSubmitting] = useState<boolean>(false);
+   useEffect(() => {
+      setIsClient(true);
+   }, []);
 
-   const { register, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<RoomFormData>({ resolver: zodResolver(roomSchema), defaultValues: { name: "", capacity: 2, amenities: [], imageUrl: "" } });
+   const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, reset } = useForm<RoomFormData>({ resolver: zodResolver(roomSchema), defaultValues: { name: "", capacity: 2, amenities: [], imageUrl: "" } });
 
    // uploading room to the DB
-   const { mutate, isPending} = useMutation({
+   const { mutate } = useMutation({
       mutationFn: async (roomData: RoomFormData) => {
          const { data } = await axios.post('/api/rooms', roomData)
          return data;
@@ -64,12 +71,23 @@ const AddRoomForm = () => {
    }
 
    const onSubmit = (data: RoomFormData) => {
-      mutate(data);
+      setIsFormSubmitting(true);
+      
+      try {
+         mutate(data);
+         toast.success("Room added successfully!");
+         setIsFormSubmitting(false);
+         reset();
+      } catch (error) {
+         console.error("Error adding room:", error);
+         toast.error("Failed to add room. Please try again.");
+         setIsFormSubmitting(false);
+      }
    };
 
    return (
-      <div className="max-w-lg mx-auto  p-6 rounded-lg shadow-lg">
-         <h2 className="text-2xl font-bold text-gray-700 text-center mb-4">Add a New Room</h2>
+      <div className="max-w-lg mx-auto  p-6 rounded-lg shadow-lg ">
+         <h2 className="text-5xl font-bold text-center mb-4">Add a New Room</h2>
 
          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Room Name */}
@@ -89,17 +107,20 @@ const AddRoomForm = () => {
             {/* Amenities */}
             <div>
                <label className="block text-gray-600">Amenities</label>
-               <Select
-                  isMulti
-                  options={amenitiesOptions}
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  onChange={(selected) => {
-                     const values = selected.map((option) => option.value);
-                     setSelectedAmenities(values);
-                     setValue("amenities", values);
-                  }}
-               />
+               {isClient && (
+                  <Select
+                     isMulti
+                     required
+                     options={amenitiesOptions}
+                     className="basic-multi-select"
+                     classNamePrefix="select"
+                     onChange={(selected) => {
+                        const values = selected.map((option) => option.value);
+                        setSelectedAmenities(values);
+                        setValue("amenities", values);
+                     }}
+                  />
+               )}
                {errors.amenities && <p className="text-red-500 text-sm">{errors.amenities.message}</p>}
             </div>
 
@@ -114,13 +135,13 @@ const AddRoomForm = () => {
             {/* Image Preview */}
             {previewImage && (
                <div className="flex justify-center">
-                  <Image width={160} height={160} objectFit='cover' src={previewImage} alt="Room Preview" className="w-32 h-32 rounded-lg object-cover mt-2 shadow-md " />
+                  <Image width={160} height={160} unoptimized={true} objectFit='cover' src={previewImage} alt="Room Preview" className="w-32 h-32 rounded-lg  mt-2 shadow-md " />
                </div>
             )}
 
             {/* Submit Button */}
-            <button type="submit" disabled={isSubmitting || isPending} className="btn btn-primary w-full">
-               {isPending ? "Adding Room..." : "Add Room"}
+            <button type="submit" disabled={isFormSubmitting || isSubmitting} className="btn   w-full">
+               {isFormSubmitting ? "Adding Room..." : "Add Room"}
             </button>
          </form>
       </div>

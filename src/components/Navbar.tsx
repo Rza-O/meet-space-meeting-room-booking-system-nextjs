@@ -39,7 +39,7 @@ const Navbar = () => {
       <>
          <li><Link href="/">Home</Link></li>
          <li><Link href="/add-room">Add room</Link></li>
-         <li><Link href="/admin">Manage Room</Link></li>
+         <li><Link href="/manage-rooms">Manage Room</Link></li>
          <li><Link href="/admin">Manage Bookings</Link></li>
 
       </>

@@ -3,8 +3,8 @@ import { ClimbingBoxLoader } from 'react-spinners';
 
 const LoadingSkeleton = () => {
    return (
-      <div>
-         <ClimbingBoxLoader size={200} />
+      <div className='flex justify-center items-center h-screen'>
+         <ClimbingBoxLoader size={50} />
       </div>
    );
 };
