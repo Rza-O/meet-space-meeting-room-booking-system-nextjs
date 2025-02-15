@@ -31,7 +31,7 @@ const Navbar = () => {
    const userNav: React.JSX.Element = (
       <>
          <li><Link href="/">Home</Link></li>
-         <li><Link href="/rooms">Available Rooms</Link></li>
+         <li><Link href="/available-rooms">Available Rooms</Link></li>
          <li><Link href="/my-bookings">My Bookings</Link></li>
       </>
    );

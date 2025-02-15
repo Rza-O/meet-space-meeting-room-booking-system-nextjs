@@ -15,7 +15,7 @@ const ManageRooms = () => {
    })
 
    if(isLoading) return <LoadingSkeleton />
-
+   console.log(rooms);
 
    return (
       <div className='container mx-auto text-center space-y-5 mt-5 '>
