@@ -18,7 +18,7 @@ type ManageRoomTableProps = {
 };
 
 const ManageRoomTable = ({ rooms }: ManageRoomTableProps) => {
-   console.log(rooms)
+   // console.log(rooms)
    return (
       <div className="overflow-x-auto">
          <table className="table">
@@ -62,7 +62,7 @@ const ManageRoomTable = ({ rooms }: ManageRoomTableProps) => {
                         </td>
                         <td>{room.capacity} Persons</td>
                         <th>
-                           <UpdateButton />
+                           <UpdateButton room={room} />
                            <DeleteButton roomId={room.id} />
                         </th>
                      </tr>

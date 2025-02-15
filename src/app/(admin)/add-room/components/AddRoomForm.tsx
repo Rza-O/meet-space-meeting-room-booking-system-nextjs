@@ -3,6 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import {  useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -33,11 +34,12 @@ const AddRoomForm = () => {
    const [isUploading, setIsUploading] = useState<boolean>(false);
    const [isClient, setIsClient] = useState<boolean>(false);
    const [isFormSubmitting, setIsFormSubmitting] = useState<boolean>(false);
+   const router = useRouter();
    useEffect(() => {
       setIsClient(true);
    }, []);
 
-   const { register, handleSubmit, formState: { errors, isSubmitting }, setValue, reset } = useForm<RoomFormData>({ resolver: zodResolver(roomSchema), defaultValues: { name: "", capacity: 2, amenities: [], imageUrl: "" } });
+   const { register, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<RoomFormData>({ resolver: zodResolver(roomSchema), defaultValues: { name: "", capacity: 2, amenities: [], imageUrl: "" } });
 
    // uploading room to the DB
    const { mutate } = useMutation({
@@ -77,7 +79,8 @@ const AddRoomForm = () => {
          mutate(data);
          toast.success("Room added successfully!");
          setIsFormSubmitting(false);
-         reset();
+         router.push('/manage-rooms');
+
       } catch (error) {
          console.error("Error adding room:", error);
          toast.error("Failed to add room. Please try again.");
