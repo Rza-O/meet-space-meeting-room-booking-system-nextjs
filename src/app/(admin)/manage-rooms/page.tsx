@@ -2,7 +2,7 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import React from 'react';
-import ManageRoomsTable from './components/ManageRoomTable'; // Adjust the import path as necessary
+import ManageRoomsTable from './components/ManageRoomTable';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 
 const ManageRooms = () => {

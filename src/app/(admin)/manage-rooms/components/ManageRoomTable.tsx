@@ -63,7 +63,7 @@ const ManageRoomTable = ({ rooms }: ManageRoomTableProps) => {
                         <td>{room.capacity} Persons</td>
                         <th>
                            <UpdateButton />
-                           <DeleteButton />
+                           <DeleteButton roomId={room.id} />
                         </th>
                      </tr>
                   ))
