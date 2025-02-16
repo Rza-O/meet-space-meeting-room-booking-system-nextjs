@@ -3,9 +3,15 @@ import { prisma } from "@/lib/prisma";
 import { getAuth } from "@clerk/nextjs/server"; 
 import { ObjectId } from "mongodb"; 
 
+interface RouteParams {
+	params: {
+		id: string
+	}
+}
+
 export async function DELETE(
 	req: NextRequest,
-	{ params }: { params: { id: string } }
+	{ params }: RouteParams
 ) {
 	try {
 		const { userId } = getAuth(req); 
