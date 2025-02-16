@@ -1,32 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { getAuth } from "@clerk/nextjs/server";
-import { ObjectId } from "mongodb";
+import prisma from "@/lib/prisma";
+import { currentUser } from "@clerk/nextjs/server";
 
-interface RouteParams {
-	params: {
-		id: string;
-	};
-}
+type RouteContext = {
+	params: { id: string };
+};
 
-export async function DELETE(req: NextRequest, params: RouteParams) {
+export async function DELETE(req: NextRequest, { params }: RouteContext) {
 	try {
-		const { userId } = getAuth(req);
-		if (!userId) {
+		const user = await currentUser();
+		if (!user) {
 			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
-		const { id } = await params;
-		const bookingId = id;
 
-		//Ensure bookingId is valid for MongoDB
-		if (!ObjectId.isValid(bookingId)) {
-			return NextResponse.json(
-				{ message: "Invalid booking ID" },
-				{ status: 400 }
-			);
-		}
+		// Get booking ID from params
+		const {id : bookingId }= await params;
 
-		//Find the booking
+		// Find the booking
 		const booking = await prisma.booking.findUnique({
 			where: { id: bookingId },
 		});
@@ -38,15 +28,15 @@ export async function DELETE(req: NextRequest, params: RouteParams) {
 			);
 		}
 
-		//Ensure the booking belongs to the logged-in user
-		if (booking.userId !== userId) {
+		// Ensure the booking belongs to the logged-in user
+		if (booking.userId !== user.id) {
 			return NextResponse.json(
 				{ message: "Unauthorized to delete this booking" },
 				{ status: 403 }
 			);
 		}
 
-		//delete the booking
+		// Delete the booking
 		await prisma.booking.delete({ where: { id: bookingId } });
 
 		return NextResponse.json(
