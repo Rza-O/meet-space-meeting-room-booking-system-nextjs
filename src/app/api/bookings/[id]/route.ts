@@ -8,8 +8,8 @@ export async function DELETE(
 	context: { params: { id: string } }
 ) {
 	try {
-		const user = await auth();
-		if (!user) {
+		const {userId} = await auth();
+		if (!userId) {
 			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
 
@@ -29,7 +29,7 @@ export async function DELETE(
 		}
 
 		//Ensure the booking belongs to the logged-in user
-		if (booking.userId !== user.userId) {
+		if (booking.userId !== userId) {
 			return NextResponse.json(
 				{ message: "Unauthorized to delete this booking" },
 				{ status: 403 }
