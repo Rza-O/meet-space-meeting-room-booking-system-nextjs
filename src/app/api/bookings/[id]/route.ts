@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 
-
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: any) {
 	try {
 		const user = await currentUser();
 		if (!user) {
@@ -11,7 +10,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 		}
 
 		// Get booking ID from params
-		const {id : bookingId }= await params;
+		const { id: bookingId } = await params;
 
 		// Find the booking
 		const booking = await prisma.booking.findUnique({
