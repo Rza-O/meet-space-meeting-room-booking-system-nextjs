@@ -1,56 +1,60 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma"; 
+import { getAuth } from "@clerk/nextjs/server"; 
+import { ObjectId } from "mongodb"; 
 
-export default async function handler(
-	req: NextApiRequest,
-	res: NextApiResponse
+export async function DELETE(
+	req: NextRequest,
+	{ params }: { params: { id: string } }
 ) {
-	if (req.method === "DELETE") {
-		try {
-			const { userId } = await auth();
-			if (!userId) {
-				return res.status(401).json({ message: "Unauthorized" });
-			}
-
-			// Get booking ID from query
-			const { id } = req.query;
-			const bookingId = id as string;
-
-			// Find the booking
-			const booking = await prisma.booking.findUnique({
-				where: { id: bookingId },
-			});
-
-			if (!booking) {
-				return res.status(404).json({ message: "Booking not found" });
-			}
-
-			// Ensure the booking belongs to the logged-in user
-			if (booking.userId !== userId) {
-				return res
-					.status(403)
-					.json({ message: "Unauthorized to delete this booking" });
-			}
-
-			// Delete the booking
-			await prisma.booking.delete({
-				where: {
-					id: bookingId,
-				},
-			});
-
-			return res
-				.status(200)
-				.json({ message: "Booking deleted successfully" });
-		} catch (error) {
-			console.error("Delete error:", error);
-			return res
-				.status(500)
-				.json({ message: "Error deleting booking", error });
+	try {
+		const { userId } = getAuth(req); 
+		if (!userId) {
+			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
-	} else {
-		res.setHeader("Allow", ["DELETE"]);
-		return res.status(405).end(`Method ${req.method} Not Allowed`);
+		const { id } = await params;
+		const bookingId = id;
+
+		//Ensure bookingId is valid for MongoDB
+		if (!ObjectId.isValid(bookingId)) {
+			return NextResponse.json(
+				{ message: "Invalid booking ID" },
+				{ status: 400 }
+			);
+		}
+
+		//Find the booking
+		const booking = await prisma.booking.findUnique({
+			where: { id: bookingId },
+		});
+
+		if (!booking) {
+			return NextResponse.json(
+				{ message: "Booking not found" },
+				{ status: 404 }
+			);
+		}
+
+		//Ensure the booking belongs to the logged-in user
+		if (booking.userId !== userId) {
+			return NextResponse.json(
+				{ message: "Unauthorized to delete this booking" },
+				{ status: 403 }
+			);
+		}
+
+		//delete the booking
+		await prisma.booking.delete({ where: { id: bookingId } });
+
+		return NextResponse.json(
+			{ message: "Booking deleted successfully" },
+			{ status: 200 }
+		);
+	} catch (error) {
+		console.error("Delete error:", error);
+		return NextResponse.json(
+			{ message: "Error deleting booking", error },
+			{ status: 500 }
+		);
 	}
 }
