@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { auth } from "@clerk/nextjs/server";
-
+import { prisma } from "@/lib/prisma";
+import { auth } from "@clerk/nextjs"; 
 
 export async function DELETE(
 	req: NextRequest,
 	context: { params: { id: string } }
 ) {
 	try {
-		const {userId} = await auth();
+		const { userId } = auth(); 
 		if (!userId) {
 			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
 
-		//Get booking ID from params
 		const bookingId = context.params.id;
 
 		//Find the booking
