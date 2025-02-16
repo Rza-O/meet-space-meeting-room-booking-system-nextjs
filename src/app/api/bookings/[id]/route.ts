@@ -2,11 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 
-type RouteContext = {
-	params: { id: string };
-};
 
-export async function DELETE(req: NextRequest, { params }: RouteContext) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
 	try {
 		const user = await currentUser();
 		if (!user) {
