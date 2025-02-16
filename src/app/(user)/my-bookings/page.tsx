@@ -29,6 +29,7 @@ const MyBookings = () => {
    // Delete mutation with proper typing
    const { mutate: deleteBooking } = useMutation({
       mutationFn: async (bookingId: string) => {
+         console.log("Deleting booking:", bookingId);
          await axios.delete(`/api/bookings/${bookingId}`);
       },
       onSuccess: () => {

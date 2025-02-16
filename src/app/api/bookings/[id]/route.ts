@@ -1,23 +1,29 @@
-import { prisma } from "@/lib/prisma";
-import { getAuth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { auth } from "@clerk/nextjs/server";
 
 export async function DELETE(
 	req: NextRequest,
-	context: { params?: { id?: string } }
+	context: { params: { id: string } }
 ) {
 	try {
-		const { userId } = getAuth(req); 
+		const { userId } = await auth();
+		// console.log(auth())
 		if (!userId) {
 			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
 
-		const bookingId = context.params?.id;
+		//Get booking ID from params
+		const { id } = context.params;
+		const bookingId = id;
 
 		//Find the booking
 		const booking = await prisma.booking.findUnique({
 			where: { id: bookingId },
 		});
+
+		console.log("Booking ID received:", bookingId);
+		console.log("User ID:", userId);
 
 		if (!booking) {
 			return NextResponse.json(
@@ -35,7 +41,11 @@ export async function DELETE(
 		}
 
 		//Delete the booking
-		await prisma.booking.delete({ where: { id: bookingId } });
+		await prisma.booking.delete({
+			where: {
+				id: bookingId,
+			},
+		});
 
 		return NextResponse.json(
 			{ message: "Booking deleted successfully" },
