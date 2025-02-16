@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; 
-import { getAuth } from "@clerk/nextjs/server"; 
-import { ObjectId } from "mongodb"; 
+import { prisma } from "@/lib/prisma";
+import { getAuth } from "@clerk/nextjs/server";
+import { ObjectId } from "mongodb";
 
 interface RouteParams {
 	params: {
-		id: string
-	}
+		id: string;
+	};
 }
 
-export async function DELETE(
-	req: NextRequest,
-	{ params }: RouteParams
-) {
+export async function DELETE(req: NextRequest, params: RouteParams) {
 	try {
-		const { userId } = getAuth(req); 
+		const { userId } = getAuth(req);
 		if (!userId) {
 			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
