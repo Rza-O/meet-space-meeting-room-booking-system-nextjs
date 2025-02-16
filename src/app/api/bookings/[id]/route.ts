@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 
 export async function DELETE(
@@ -8,7 +8,7 @@ export async function DELETE(
 	context: { params: { id: string } }
 ) {
 	try {
-		const user = await currentUser();
+		const user = await auth();
 		if (!user) {
 			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
@@ -29,7 +29,7 @@ export async function DELETE(
 		}
 
 		//Ensure the booking belongs to the logged-in user
-		if (booking.userId !== user.id) {
+		if (booking.userId !== user.userId) {
 			return NextResponse.json(
 				{ message: "Unauthorized to delete this booking" },
 				{ status: 403 }
