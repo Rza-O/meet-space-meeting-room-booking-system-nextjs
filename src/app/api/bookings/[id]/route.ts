@@ -4,10 +4,12 @@ import { currentUser } from "@clerk/nextjs/server";
 
 export const DELETE = async (
 	req: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> } // Accepting params as Promise
 ) => {
 	try {
+		// Await the params to get the resolved value
 		const { id: bookingId } = await params;
+
 		const user = await currentUser();
 		if (!user) {
 			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
