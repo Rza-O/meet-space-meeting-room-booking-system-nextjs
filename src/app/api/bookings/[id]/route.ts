@@ -1,21 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
-import { currentUser } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/prisma";
+import { getAuth } from "@clerk/nextjs/server";
+import { ObjectId } from "mongodb";
 
-export const DELETE = async (
-	req: NextRequest,
-	{ params }: { params: Promise<{ id: string }> } // Accepting params as Promise
-) => {
+// Explicit type for route parameters
+type RouteParams = {
+	params: {
+		id: string;
+	};
+};
+
+export async function DELETE(
+	request: NextRequest,
+	context: RouteParams
+): Promise<NextResponse> {
 	try {
-		// Await the params to get the resolved value
-		const { id: bookingId } = await params;
-
-		const user = await currentUser();
-		if (!user) {
+		const { userId } = getAuth(request);
+		if (!userId) {
 			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
 
-		// Find the booking
+		const bookingId = context.params.id;
+
+		if (!ObjectId.isValid(bookingId)) {
+			return NextResponse.json(
+				{ message: "Invalid booking ID format" },
+				{ status: 400 }
+			);
+		}
+
 		const booking = await prisma.booking.findUnique({
 			where: { id: bookingId },
 		});
@@ -27,15 +40,13 @@ export const DELETE = async (
 			);
 		}
 
-		// Ensure the booking belongs to the logged-in user
-		if (booking.userId !== user.id) {
+		if (booking.userId !== userId) {
 			return NextResponse.json(
-				{ message: "Unauthorized to delete this booking" },
+				{ message: "Unauthorized access" },
 				{ status: 403 }
 			);
 		}
 
-		// Delete the booking
 		await prisma.booking.delete({ where: { id: bookingId } });
 
 		return NextResponse.json(
@@ -43,10 +54,10 @@ export const DELETE = async (
 			{ status: 200 }
 		);
 	} catch (error) {
-		console.error("Delete error:", error);
+		console.error("DELETE Error:", error);
 		return NextResponse.json(
-			{ message: "Error deleting booking", error },
+			{ message: "Internal server error" },
 			{ status: 500 }
 		);
 	}
-};
+}

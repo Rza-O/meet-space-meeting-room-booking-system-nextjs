@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MeetSpace - Online Meeting Room Booking Platform
 
-## Getting Started
+MeetSpace is an online meeting room booking system that allows users to browse available rooms, book them based on availability, and manage their bookings. The platform ensures seamless authentication, booking conflict prevention, and a user-friendly interface.
 
-First, run the development server:
+## 🚀 Features Implemented
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### **🔑 Authentication**
+- User authentication powered by **Clerk**
+- Automatically saves user data to the database upon login
+- Role-based authentication with three levels: **Guest, User, Admin**
+
+### **🏢 Room Management**
+- **List available rooms** with details including name, capacity, amenities, and images
+- **Add a new room** with:
+  - Name input
+  - Capacity selection
+  - Amenities selection via a multi-select dropdown
+  - Image upload via **ImgBB**, with real-time preview
+- **Edit room details** through a modal form
+- **Delete rooms** with a confirmation prompt using **SweetAlert2**
+
+### **📅 Booking System**
+- **Book a room** with:
+  - **Date selection** using **React DatePicker**
+  - **Time selection** (9 AM - 12 PM in 30-minute intervals)
+  - Prevents **double bookings** for the same room at the same time
+  - Ensures **users can't book the same room at the same time**
+- **Store bookings in MongoDB** using **Prisma ORM**
+- **Save user bookings to local storage**
+- **Paginated My Bookings page** (5 bookings per page)
+- **Delete booking functionality** with confirmation prompt
+
+### **🎨 UI & UX Enhancements**
+- Responsive **navigation bar** with **role-based menu items**
+- Beautiful **room cards** displaying amenities, images, and details
+- **Loading state handling** for API calls using React Query
+- **Floating Book Now button** to enhance UX for mobile & desktop users
+
+---
+
+## 🛠️ Setup Instructions
+
+### **1️⃣ Clone the Repository**
+```sh
+git clone https://github.com/your-github-username/meet-space.git
+cd meet-space
+```
+### **2️⃣ Install Dependencies**
+```sh
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### **3️⃣ Set Up Environment Variables**
+Create a .env file in the root directory and add the following (replace the dummy values with your actual credentials):
+```sh
+DATABASE_URL="your-mongodb-connection-string"
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your-clerk-publishable-key"
+CLERK_SECRET_KEY="your-clerk-secret-key"
+NEXT_PUBLIC_IMGBB_API_KEY="your-imgbb-api-key"
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### **4️⃣ Generate Prisma Client**
+```sh
+npx prisma generate
+```
+### **5️⃣ Start the Development Server**
+```sh
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Admin Credentials
+For testing the admin functionalities, you can use the following dummy admin credentials:
 
-## Learn More
+- Email: shahreza.dev@gmail.com
+- Password: HappyCoding01
+#### Note: In production, ensure that admin credentials are managed securely and not hard-coded.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Happy coding! 🚀
