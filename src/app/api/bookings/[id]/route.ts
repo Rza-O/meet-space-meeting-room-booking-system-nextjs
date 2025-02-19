@@ -1,34 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma"; // Ensure correct import
 import { getAuth } from "@clerk/nextjs/server";
-import { ObjectId } from "mongodb";
 
 // Explicit type for route parameters
 type RouteParams = {
-	params: {
-		id: string;
-	};
+	params: { id: string };
 };
 
 export async function DELETE(
 	request: NextRequest,
-	context: RouteParams
+	{ params }: RouteParams
 ): Promise<NextResponse> {
 	try {
+
+		// Get authenticated user
 		const { userId } = getAuth(request);
 		if (!userId) {
 			return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 		}
 
-		const bookingId = context.params.id;
-
-		if (!ObjectId.isValid(bookingId)) {
+		// Extract booking ID from params
+		const bookingId = params.id;
+		if (!bookingId) {
 			return NextResponse.json(
-				{ message: "Invalid booking ID format" },
+				{ message: "Booking ID is required" },
 				{ status: 400 }
 			);
 		}
 
+		// Ensure booking exists
 		const booking = await prisma.booking.findUnique({
 			where: { id: bookingId },
 		});
@@ -47,7 +47,10 @@ export async function DELETE(
 			);
 		}
 
-		await prisma.booking.delete({ where: { id: bookingId } });
+		// Delete the booking
+		await prisma.booking.delete({
+			where: { id: bookingId },
+		});
 
 		return NextResponse.json(
 			{ message: "Booking deleted successfully" },
@@ -56,7 +59,7 @@ export async function DELETE(
 	} catch (error) {
 		console.error("DELETE Error:", error);
 		return NextResponse.json(
-			{ message: "Internal server error" },
+			{ message: "Internal server error"},
 			{ status: 500 }
 		);
 	}
